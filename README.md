@@ -8,7 +8,7 @@
 - All six (6) Ansible host targets have been modified in accordance to RKE2 prequisites.
 - A dedicated IP address for the floating IP that kubectl will use to access the cluster.
 - A contiguous IP range for the MetalLB load balancer.
-- Kubectl, Helm and K9S installed on your client machine to access the cluster.
+- Kubectl and Helm installed on your client machine to access the cluster.
 
 > [!IMPORTANT]
 >
@@ -103,6 +103,26 @@ ansible-playbook site.yaml -i inventory/hosts.ini
 
 ## Post Ansible Steps
 
+Get the .kube/config from the first master node by logging onto that server and using the following command:
+
+```bash
+cat .kube/config
+```
+
+Copy the output and open up your local .kube/config file and paste the contents into that file. Remember to change the IP address in the file to the floating Kube-VIP address.
+
+Once that is completed you shoud be able to execute the following command and get a list of nodes in the cluster:
+
+```bash
+kubectl get nodes -A -o=wide
+```
+
+To see how the cluster came up, you can list out the pods in the order they were started using the following command:
+
+```bash
+kubectl get pods -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,NODE:.spec.nodeName,HOSTIP:.status.hostIP,PHASE:.status.phase,START_TIME:.metadata.creationTimestamp --sort-by=.metadata.creationTimestamp
+```
+
 ### Taints
 
 Taint the server (master) nodes so that we don't have pods scheduled on the server (master) nodes.
@@ -117,7 +137,25 @@ kubectl taint node o8rke2m3 special=true:PreferNoSchedule
 >
 > Tainting the master nods is done because the Kube-VIP and MetalLB are considered applications but are deployed to the master (server) nodes to be closer to the pods they need to interact with. So the taint cannot be in place when we are creating the cluster.
 >
-> RKE2 uses the nomenclature of servers to refer to master nodes. Agents are the worker nodes.
+> PreferNoSchedule is used in case the agents become over utilized. Then the scheduler will try to schedule the pods on the master (server) nodes, if it can.
+>
+> RKE2 uses the nomenclature of: 
+>
+> - Servers to refer to master control plane nodes. 
+> - Agents are the worker nodes where application pods execute.
+
+To view the taints in the cluster execute the following command:
+
+```bash
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints --no-headers
+
+o8rke2a1   <none>
+o8rke2a2   <none>
+o8rke2a3   <none>
+o8rke2m1   [map[effect:PreferNoSchedule key:special value:true]]
+o8rke2m2   [map[effect:PreferNoSchedule key:special value:true]]
+o8rke2m3   [map[effect:PreferNoSchedule key:special value:true]]
+```
 
 ### Deploy Test Application Using Helm
 
@@ -146,6 +184,14 @@ helm install --create-namespace \
     --set nodeselector.label=agent 
 ```
 
+Use the following command to check what nodes the pods have been deployed to:
+
+```bash
+kubectl get pods -n k8s-test --output 'jsonpath={range .items[*]}{.spec.nodeName}{" "}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'
+```
+
+The pods should have been deployed to only the Agent nodes in the cluster.
+
 Change the number of replicas (pods) to six and the display message by using the following command:
 
 ```bash
@@ -156,7 +202,23 @@ helm upgrade --namespace k8s-test \
     --set nodeselector.label=agent 
 ```
 
-Boost the number of replicas (pods) to nine and along with the display message by using the following command:
+Use the following command to check what nodes the pods have been deployed to:
+
+```bash
+kubectl get pods -n k8s-test --output 'jsonpath={range .items[*]}{.spec.nodeName}{" "}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'
+```
+
+The pods should have been deployed to only the Agent nodes in the cluster.
+
+Let's experiment and remove the taints from the master (server) nodes:
+
+```bash
+kubectl taint node o8rke2m1 special=true:PreferNoSchedule-
+kubectl taint node o8rke2m2 special=true:PreferNoSchedule-
+kubectl taint node o8rke2m3 special=true:PreferNoSchedule-
+```
+
+Now, boost the number of replicas (pods) to nine and along with the display message by using the following command:
 
 ```bash
 helm upgrade --namespace k8s-test \
@@ -166,10 +228,26 @@ helm upgrade --namespace k8s-test \
     --set nodeselector.label=agent 
 ```
 
+Use the following command to check what nodes the pods have been deployed to:
+
+```bash
+kubectl get pods -n k8s-test --output 'jsonpath={range .items[*]}{.spec.nodeName}{" "}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'
+```
+
+Notice that the pods have been deployed to both the Agent and Server nodes in the cluster.
+
+Let's taint the nodes again to return them to the state we want.
+
+```bash
+kubectl taint node o8rke2m1 special=true:PreferNoSchedule
+kubectl taint node o8rke2m2 special=true:PreferNoSchedule
+kubectl taint node o8rke2m3 special=true:PreferNoSchedule
+```
+
 Now, let us uninstall the application using the following command:
 
 ```bash
-helm uninstall --namespace k8s-test custom-message  
+helm uninstall --namespace k8s-test custom-message
 ```
 
 Delete the namespace to keep the environment clean using the following command:
