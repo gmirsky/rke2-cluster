@@ -44,7 +44,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-master" {
   #nameserver   = "192.168.1.1"
   #searchdomain = "fios-router.home"
 #   sshkeys      = <<EOF
-# ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC68h9GRt61EV1ZOjHz1bc00RTmIPz0n21yuXghovICO0GiGGLt0sr0XB4KdzSv77+NFPwtngKp74XP1m8ebMDFyDbJtt9z+9K7vlkHB2Z1dusIM7qwWzB/ypxvPTHw6KN6shQ0uChh4KzTiy089KI2CxWa/g+b3CeS3xsW+A03Y6Q2tsPDHzEtBZJqNZf811lOCrCLXwZHIaa2HG6nCcgztkNMbVx8hLE5wHFzpP52ILqltiXWsYhjmz59sxHWQjl5eM52uYeMs+QOg9/RNRl8TkVb0TCD0rgE1vcOsr2Cq/cMbNVcIo/gTvnXAXT2HqZ+nczPzJ/feu3ziWdVpGK0HP+IlCb2UGFovsjArZltuZdba86bEaf6KsgSJsTbHXIJY+vYE7otr+2/hdztFTjX5HfkjRKTELDIj57E8eS5t9DLHAkHPKwODGvyLAnZ9HDSJ66L4JsFJ4Q7S45UGZqnGotEdtZ/UAgYnBO1LjDPeAe6AGsdj7yBqzpCbYoBwYIXoZ6B+bz9AEDC0jKDISbyiliTlJ4nEGCHi6QIJ0ON/7XIDCF6q888hM7QRqfoOVhC08VmettFirUENE3b1zCEQ53RukJ5sPqdTgcITyrQ90OqiYioxCnTi9KQ4jiiZBN612tf/P1DneoxnP7iilkTKyB1RmJ2G5NdGPDZEit4dQ== gregorymirsky@Gregorys-MBP.fios-router.home
+# ssh-rsa ***************************************************
 # EOF
 }
 #
