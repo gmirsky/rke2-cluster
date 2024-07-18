@@ -1,4 +1,5 @@
-# Copy server config with token to all servers except server 1 (this has token)
+# Copy server config with the token to all the servers 
+# except server 1, since this already has the token
 - name: Deploy RKE2 server Configuration
   ansible.builtin.template:
     src: templates/rke2-server-config.j2
@@ -20,20 +21,20 @@
   become_user: "{{ ansible_user }}"
   when: inventory_hostname == groups['servers'][0]
 
-# Use kubectl to deploy yaml. Perhaps this can be added to the manifest folder initially
+# Use kubectl to deploy yaml 
 - name: Apply kube vip configuration file
   ansible.builtin.command:
     cmd: kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f https://kube-vip.io/manifests/rbac.yaml
   changed_when: true
-  become_user: "{{ ansible_user }}" #gnm
+  become_user: "{{ ansible_user }}"
   when: inventory_hostname == groups['servers'][0]
 
-# Apply the kube-vip configration. Perhaps this can be added to the manifest folder initially
+# Apply the kube-vip configration 
 - name: Apply kube vip configuration file
   ansible.builtin.command:
     cmd: kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml apply -f https://raw.githubusercontent.com/kube-vip/kube-vip-cloud-provider/main/manifest/kube-vip-cloud-controller.yaml
   changed_when: true
-  become_user: "{{ ansible_user }}" #gnm
+  become_user: "{{ ansible_user }}"
   when: inventory_hostname == groups['servers'][0]
 
 # Check that additional servers are restarted

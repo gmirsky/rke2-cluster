@@ -3,21 +3,16 @@
 ## Prerequisites
 
 - Three (3) Linux hosts that will act as master control servers for the RKE2 cluster.
-- Three (3) or more hosts that will act as the worker nodes for the RKE2 cluster.
-- One (1) NFS host that has a share that can be mounted to the worker node hosts.
+- Three (3) or more Linux hosts that will act as the worker nodes for the RKE2 cluster.
 - All six (6) Ansible host targets have been fully updated and have a static IP address.
 - All six (6) Ansible host targets have been modified in accordance to RKE2 prequisites.
-- A dedicated IP address for the floating kubectl access across the master (server) nodes.
+- A dedicated IP address for the floating IP that kubectl will use to access the cluster.
 - A contiguous IP range for the MetalLB load balancer.
 - Kubectl, Helm and K9S installed on your client machine to access the cluster.
 
 > [!IMPORTANT]
 >
 > This walk-through has been tested with Ubuntu 24 LTS, Ubuntu22LTS and with Oracle 8 Linux. Other distributions may require some tweaking of the code to work properly.
-
-## Terraform
-
-<Terraform instructions go here>
 
 ## Ansible
 
@@ -28,6 +23,10 @@ cd ansible
 ```
 
 Update the values in the inventory/group_vars/all.yaml that are appropriate for your environment.
+
+- The latest version of Kube-VIP can be found [here](https://github.com/kube-vip/kube-vip/releases)
+- The latest version of MetalLB can be found [here](https://github.com/metallb/metallb/tags)
+- The latest version of RKE2 can be found [here](https://github.com/rancher/rke2/releases)
 
 ```yaml
 os: "linux"
@@ -52,27 +51,55 @@ ansible_become_method: sudo
 
 > [!NOTE]
 >
+> The `ansible_user` should have full sudo privileges.
+>
 > The MetalLB `lb_range` needs to be contiguous. It can be as little as two IP addresses if needed.
 >
 > Make sure that the vip_interface matches the interface name on all of your servers. Consult the documentation for your Linux distribution to change the name of your network interface to make the name uniform across all of your servers.
 
-Ping all the hosts to insure that you have proper communication between Ansible and the hosts.
+Update the values in ansible/inventory/hosts.ini with the proper IP addresses.
+
+```ini
+; Make sure Ansible host has access to these devices
+; and snapshot all machines before running Ansible
+; so you revert if something fails
+
+[servers]
+server1 ansible_host=192.168.1.191
+server2 ansible_host=192.168.1.192
+server3 ansible_host=192.168.1.193
+
+[servers:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[agents]
+agent1 ansible_host=192.168.1.194
+agent2 ansible_host=192.168.1.195
+agent3 ansible_host=192.168.1.196
+
+[agents:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+[all:children]
+servers
+agents
+```
+
+Ping all the hosts to insure that you have proper communication between Ansible and the hosts using the following command:
 
 ```bash
 ansible-playbook ping.yaml -i inventory/hosts.ini
 ```
 
-Mount the NFS share to the worker node (agent) hosts.
-
-```bash
-ansible-playbook mount-nfs.yaml -i inventory/hosts.ini
-```
-
-Deploy RKE2 to the Ansible host targets (servers and agents).
+Deploy RKE2 to the Ansible host targets (servers and agents) using the following command:
 
 ```bash
 ansible-playbook site.yaml -i inventory/hosts.ini
 ```
+
+> [!NOTE]
+>
+> If you get a failure on Server1, this may be caused by a timing issue with Server1 not being ready fast enough. Rerun the Ansible command again to clear the error.
 
 ## Post Ansible Steps
 
@@ -86,13 +113,11 @@ kubectl taint node o8rke2m2 special=true:PreferNoSchedule
 kubectl taint node o8rke2m3 special=true:PreferNoSchedule
 ```
 
-This is done because the Kobe-VIP and MetalLB are considered applications but are deployed to the master (server) nodes to be closer to the pods they need to interact with.
-
 > [!NOTE]
 >
+> Tainting the master nods is done because the Kube-VIP and MetalLB are considered applications but are deployed to the master (server) nodes to be closer to the pods they need to interact with. So the taint cannot be in place when we are creating the cluster.
+>
 > RKE2 uses the nomenclature of servers to refer to master nodes. Agents are the worker nodes.
-
-
 
 ### Deploy Test Application Using Helm
 
@@ -110,7 +135,7 @@ Otherwise just change into the Helm directory:
 cd helm
 ```
 
-Deploy the test application using Helm:
+Deploy the application using the following command:
 
 ```bash
 helm install --create-namespace \
@@ -121,5 +146,35 @@ helm install --create-namespace \
     --set nodeselector.label=agent 
 ```
 
-You may change the name of the Kubernetes namespace that the application is deployted to. In addition, you can change the message too. 
+Change the number of replicas (pods) to six and the display message by using the following command:
+
+```bash
+helm upgrade --namespace k8s-test \
+    custom-message ./hello-kubernetes \
+    --set message='HA RKE2 Kubernetes on Oracle Linux 8.10 (6 pods)' \
+    --set deployment.replicaCount=6 \
+    --set nodeselector.label=agent 
+```
+
+Boost the number of replicas (pods) to nine and along with the display message by using the following command:
+
+```bash
+helm upgrade --namespace k8s-test \
+    custom-message ./hello-kubernetes \
+    --set message='HA RKE2 Kubernetes on Oracle Linux 8.10 (9 pods)' \
+    --set deployment.replicaCount=9 \
+    --set nodeselector.label=agent 
+```
+
+Now, let us uninstall the application using the following command:
+
+```bash
+helm uninstall --namespace k8s-test custom-message  
+```
+
+Delete the namespace to keep the environment clean using the following command:
+
+```bash
+kubectl delete namespace k8s-test
+```
 
