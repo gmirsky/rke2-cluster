@@ -1,0 +1,19 @@
+---
+- name: "Mount the NFS volume on the agents"
+  hosts: agents
+  gather_facts: true
+  tasks:
+    # - name: "Install nfs-utils"
+    #   become: true
+    #   ansible.builtin.dnf:
+    #     name: nfs-utils
+    #     state: present
+    - name: "Mount an NFS volume"
+      ansible.builtin.mount:
+        src: 192.168.1.250:/nfs-share
+        path: /mnt/nfs-share
+        opts: rw,sync 
+        state: mounted
+        fstype: nfs
+        boot: true
+        backup: false

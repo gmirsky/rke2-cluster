@@ -1,0 +1,7 @@
+---
+- name: "Ping servers and agents"
+  hosts: servers,agents,nfs
+  gather_facts: true
+  tasks:
+    - name: "Ping the hosts"
+      ansible.builtin.ping:

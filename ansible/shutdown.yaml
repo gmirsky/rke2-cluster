@@ -1,0 +1,9 @@
+---
+- name: Shut down servers and agents
+  hosts: servers,agents
+  gather_facts: true
+  tasks:
+    - name: "Shut down the nodes (and Wait upto 1 minute maximum)"
+      become: true
+      community.general.shutdown:
+        delay: 60

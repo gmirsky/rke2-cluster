@@ -1,0 +1,6 @@
+helm install --create-namespace \
+    --namespace k8s-test \
+    custom-message ./hello-kubernetes \
+    --set message='Hello Kubernetes'
+
+helm uninstall --namespace k8s-test custom-message  

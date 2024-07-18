@@ -1,0 +1,77 @@
+---
+- name: "Update all Debian-based systems"
+  hosts: servers,agents
+  gather_facts: true
+  become: true
+  tasks:
+    - name: "Update all Debian-based systems"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        name: "*"
+        state: latest
+      when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
+    - name: "Update all RedHat-based systems"
+      ansible.builtin.dnf:
+        update_cache: true
+        name: "*"
+        state: latest
+      when: ansible_os_family in ['RedHat', 'Fedora', 'SUSE', 'openSUSE', 'CentOS', 'Scientific', 'Amazon', 'Oracle']
+    # - name: "Update all Arch-based systems"
+    #   ansible.builtin.pacman:
+    #     update_cache: true
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Archlinux'
+    # - name: "Update all Gentoo-based systems"
+    #   ansible.builtin.portage:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Gentoo'
+    # - name: "Update all Slackware-based systems"
+    #   ansible.builtin.slackpkg:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Slackware'
+    # - name: "Update all Solaris-based systems"
+    #   ansible.builtin.pkg:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Solaris'
+    # - name: "Update all OpenBSD-based systems"
+    #   ansible.builtin.pkgin:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'OpenBSD'
+    # - name: "Update all FreeBSD-based systems"
+    #   ansible.builtin.pkg:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'FreeBSD'
+    # - name: "Update all MacOS-based systems"
+    #   ansible.builtin.homebrew:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Darwin'
+    # - name: "Update all Windows-based systems"
+    #   ansible.windows.win_chocolatey:
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Windows'
+    - name: "Check if a reboot is needed on all servers"
+      register: reboot_required_file
+      stat: 
+        path: /var/run/reboot-required
+    - name: "Message if a reboot is needed"
+      ansible.builtin.debug:
+        msg: "Reboot required"
+      when: reboot_required_file.stat.exists
+    - name: Reboot the box if kernel updated
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 90
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
