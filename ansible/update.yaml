@@ -4,13 +4,13 @@
   gather_facts: true
   become: true
   tasks:
-    - name: "Update all Debian-based systems"
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600
-        name: "*"
-        state: latest
-      when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
+    # - name: "Update all Debian-based systems"
+    #   ansible.builtin.apt:
+    #     update_cache: true
+    #     cache_valid_time: 3600
+    #     name: "*"
+    #     state: latest
+    #   when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
     - name: "Update all RedHat-based systems"
       ansible.builtin.dnf:
         update_cache: true
@@ -60,14 +60,14 @@
     #   when: ansible_os_family == 'Windows'
     - name: "Check if a reboot is needed on all servers"
       register: reboot_required_file
-      stat: 
+      ansible.builtin.stat:
         path: /var/run/reboot-required
     - name: "Message if a reboot is needed"
       ansible.builtin.debug:
         msg: "Reboot required"
       when: reboot_required_file.stat.exists
-    - name: Reboot the box if kernel updated
-      reboot:
+    - name: "Reboot the box if kernel updated"
+      ansible.builtin.reboot:
         msg: "Reboot initiated by Ansible for kernel updates"
         connect_timeout: 5
         reboot_timeout: 90
