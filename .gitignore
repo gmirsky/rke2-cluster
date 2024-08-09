@@ -24,10 +24,12 @@ override.tf.json
 *_override.tf.json
 
 # Include override files you do wish to add to version control using negated pattern
-# !example_override.tf
+!terraform/azure/resource_group/terraform.tfvars
+!terraform/azure/tfstate_storage_account/terraform.tfvars
+!terraform/azure/cluster_vms/terraform.tfvars
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
-# example: *tfplan*
+*tfplan*
 
 # Ignore CLI configuration files
 .terraformrc
