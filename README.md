@@ -32,15 +32,15 @@ Update the values in the inventory/group_vars/all.yaml that are appropriate for 
 os: "linux"
 arch: "amd64"
 
-kube_vip_version: "v0.8.1"
+kube_vip_version: "v0.8.3"
 vip_interface: enp6s18 
 vip: 192.168.1.190 # This is the common floating IP address for the cluster
 
-metallb_version: "v0.14.7"
+metallb_version: "v0.14.8"
 lb_range: 192.168.1.240-192.168.1.249
 lb_pool_name: first-pool
 
-rke2_version: "v1.30.2+rke2r1"
+rke2_version: "v1.30.4+rke2r1"
 rke2_install_dir: "/usr/local/bin"
 rke2_binary_url: "https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-amd64"
 
