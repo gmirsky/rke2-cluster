@@ -1,7 +1,0 @@
-account_replication_type     = "LRS"
-account_tier                 = "Standard"
-azure_primary_region         = "centralus"
-azurerm_resource_group_name  = "rg-demonstration"
-azurerm_storage_account_name = "tfstate0a2b3c4d5e6fgnm"
-environment                  = "dev"
-geography_group              = "US"

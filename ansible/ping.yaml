@@ -1,6 +1,6 @@
 ---
 - name: "Ping servers and agents"
-  hosts: servers,agents,nfs
+  hosts: servers,agents
   gather_facts: true
   tasks:
     - name: "Ping the hosts"

@@ -71,6 +71,7 @@ server3 ansible_host=192.168.1.193
 
 [servers:vars]
 ansible_python_interpreter=/usr/bin/python3
+host_key_checking = False
 
 [agents]
 agent1 ansible_host=192.168.1.194
@@ -79,6 +80,7 @@ agent3 ansible_host=192.168.1.196
 
 [agents:vars]
 ansible_python_interpreter=/usr/bin/python3
+host_key_checking = False
 
 [all:children]
 servers
@@ -128,9 +130,9 @@ kubectl get pods -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metada
 Taint the server (master) nodes so that we don't have pods scheduled on the server (master) nodes.
 
 ```bash
-kubectl taint node o8rke2m1 special=true:PreferNoSchedule
-kubectl taint node o8rke2m2 special=true:PreferNoSchedule
-kubectl taint node o8rke2m3 special=true:PreferNoSchedule
+kubectl taint node vm1 special=true:PreferNoSchedule
+kubectl taint node vm2 special=true:PreferNoSchedule
+kubectl taint node vm3 special=true:PreferNoSchedule
 ```
 
 > [!NOTE]
@@ -213,9 +215,9 @@ The pods should have been deployed to only the Agent nodes in the cluster.
 Let's experiment and remove the taints from the master (server) nodes:
 
 ```bash
-kubectl taint node o8rke2m1 special=true:PreferNoSchedule-
-kubectl taint node o8rke2m2 special=true:PreferNoSchedule-
-kubectl taint node o8rke2m3 special=true:PreferNoSchedule-
+kubectl taint node vm1 special=true:PreferNoSchedule-
+kubectl taint node vm2 special=true:PreferNoSchedule-
+kubectl taint node vm3 special=true:PreferNoSchedule-
 ```
 
 Now, boost the number of replicas (pods) to nine and along with the display message by using the following command:
@@ -239,9 +241,9 @@ Notice that the pods have been deployed to both the Agent and Server nodes in th
 Let's taint the nodes again to return them to the state we want.
 
 ```bash
-kubectl taint node o8rke2m1 special=true:PreferNoSchedule
-kubectl taint node o8rke2m2 special=true:PreferNoSchedule
-kubectl taint node o8rke2m3 special=true:PreferNoSchedule
+kubectl taint node vm1 special=true:PreferNoSchedule
+kubectl taint node vm1 special=true:PreferNoSchedule
+kubectl taint node vm1 special=true:PreferNoSchedule
 ```
 
 Now, let us uninstall the application using the following command:

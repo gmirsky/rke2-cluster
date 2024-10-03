@@ -36,3 +36,8 @@ override.tf.json
 terraform.rc
 
 kube.txt
+notes.txt
+pssh_hosts
+
+terraform/StrictHostKeyChecking=no
+terraform/.terraform.lock.hcl

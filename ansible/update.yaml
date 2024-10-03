@@ -4,13 +4,13 @@
   gather_facts: true
   become: true
   tasks:
-    # - name: "Update all Debian-based systems"
-    #   ansible.builtin.apt:
-    #     update_cache: true
-    #     cache_valid_time: 3600
-    #     name: "*"
-    #     state: latest
-    #   when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
+    - name: "Update all Debian-based systems"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        name: "*"
+        state: latest
+      when: ansible_os_family == 'Debian' or ansible_os_family == 'Ubuntu'
     - name: "Update all RedHat-based systems"
       ansible.builtin.dnf:
         update_cache: true
