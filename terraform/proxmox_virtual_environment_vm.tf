@@ -3,7 +3,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   name        = var.vm[(keys(var.vm))[count.index]].vm_name
   vm_id       = var.vm[(keys(var.vm))[count.index]].vm_id
   node_name   = var.vm[(keys(var.vm))[count.index]].proxmox_node_name
-  description = var.vm[(keys(var.vm))[count.index]].vm_description
+  description = "(${count.index + 1} of ${local.server_count}) ${var.vm[(keys(var.vm))[count.index]].vm_description}"
   tags        = var.proxmox_tags
   agent {
     # read 'Qemu guest agent' section, change to true only when ready
