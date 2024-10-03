@@ -12,7 +12,7 @@
 
 > [!IMPORTANT]
 >
-> This walk-through has been tested with Ubuntu 24 LTS, Ubuntu22LTS and with Oracle 8 Linux. Other distributions may require some tweaking of the code to work properly.
+> This walk-through has been tested with Rocky Linux 9. Other distributions may require some tweaking of the code to work properly.
 
 ## Ansible
 
