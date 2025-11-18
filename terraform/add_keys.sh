@@ -9,5 +9,5 @@ ssh-keyscan -H 192.168.1.214 >> ~/.ssh/known_hosts
 ssh-keyscan -H 192.168.1.215 >> ~/.ssh/known_hosts
 ssh-keyscan -H 192.168.1.216 >> ~/.ssh/known_hosts
 #
-pssh -h pssh_hosts -l gmirsky -i 'sudo dnf install python3.11 iptables -y'
+pssh -h pssh_hosts -l gmirsky -i 'sudo dnf install python3.12 iptables -y'
 #

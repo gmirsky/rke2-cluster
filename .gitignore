@@ -39,3 +39,6 @@ pssh_hosts
 
 terraform/StrictHostKeyChecking=no
 terraform/.terraform.lock.hcl
+
+.lock
+.DS_Store
