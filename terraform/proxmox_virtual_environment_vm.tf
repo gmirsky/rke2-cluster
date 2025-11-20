@@ -27,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
   stop_on_destroy = true
   disk {
-    datastore_id = "cephpool1"
+    datastore_id = var.datastore_id
     file_id      = proxmox_virtual_environment_download_file.this[count.index].id
     interface    = "virtio0"
     iothread     = true
