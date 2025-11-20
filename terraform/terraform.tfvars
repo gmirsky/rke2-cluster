@@ -1,9 +1,9 @@
 cloud_image_file_name = "rocky_9_latest_generic_cloud.img"
 cloud_image_url       = "http://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2"
 datastore_id          = "cpool1"
-password              = "MJU&6yhnBGT%4rfv" # replace with your password.
+password              = "******************" # replace with your password.
 proxmox_endpoint      = "https://192.168.1.201:8006/"
-proxmox_password      = "MJU&6yhnBGT%4rfv" # replace with your password.
+proxmox_password      = "******************" # replace with your password.
 proxmox_username      = "root@pam"
 ssh_public_key_file   = "/Users/gregorymirsky/.ssh/id_rsa.pub" #replace with your ssh public key file.
 username              = "gmirsky"                              #replace with the ID you want provisioned on your servers.
