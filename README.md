@@ -20,7 +20,7 @@
 >
 > This section is optional. 
 >
-> Use the terraform code to provision virtual machines on a ProxMox cluster as targets to install the RKE2 Kubernetes cluster. If you are planning to install the RKE2 nodes on other platforms can skip this step.
+> Use the terraform code to provision virtual machines on a ProxMox cluster as targets to install the RKE2 Kubernetes cluster. If you are planning to install the RKE2 nodes on other platforms, you can skip this step.
 
 Change to the Terraform directory of this repository.
 
